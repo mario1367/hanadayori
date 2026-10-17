@@ -76,6 +76,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .summary b{font-family:var(--display);font-size:20px;margin-right:4px;font-variant-numeric:tabular-nums}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px 12px;display:grid;gap:6px;align-content:start;min-width:0}
+.card .photo{margin:-14px -16px 2px;position:relative}
+.card .photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:10px 10px 0 0;background:var(--line)}
+.card .photo figcaption{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 16px 0}
+.card .photo figcaption a{color:inherit}
 .card .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .kind{font-size:12px;letter-spacing:.06em;display:flex;align-items:center;gap:6px;color:var(--muted)}
 .kind i{width:10px;height:10px;border-radius:2px;display:inline-block}
@@ -142,6 +146,8 @@ section{display:grid;gap:12px}
   .summary span[style]{font-size:14px!important}
   .grid{grid-template-columns:1fr;gap:16px}
   .card{padding:16px 18px 14px;gap:8px}
+  .card .photo{margin:-16px -18px 2px}
+  .card .photo figcaption{padding:4px 18px 0}
   .kind{font-size:14px}
   .pill{font-size:14px;padding:3px 12px}
   .card h3{font-size:21px}
@@ -292,6 +298,19 @@ const ACCESS={
  "前山寺・塩田平の紅葉":{q:"前山寺 上田",park:"参拝者用の駐車場あり。",eat:["前山寺のくるみおはぎ（予約制）"]},
  "大法寺の紅葉":{q:"大法寺 青木村",park:"参拝者用の駐車場あり。",eat:[]}
 };
+// 名所の写真（Wikimedia Commons。撮影者・ライセンスはカードに表示）
+const PHOTOS={
+ "白樺湖の紅葉":{f:"shirakabako",by:"Raita Futo",lic:"CC BY 2.0",licUrl:"https://creativecommons.org/licenses/by/2.0/",page:"https://commons.wikimedia.org/wiki/File:Lake_Shirakaba_(49785032782).jpg"},
+ "女神湖の紅葉":{f:"megamiko",by:"Raita Futo",lic:"CC BY 2.0",licUrl:"https://creativecommons.org/licenses/by/2.0/",page:"https://commons.wikimedia.org/wiki/File:Tateshina_resort_(49784172158).jpg"},
+ "池の平湿原・湯の丸の紅葉":{f:"ikenotaira",by:"u7shin",lic:"CC BY-SA 3.0",licUrl:"https://creativecommons.org/licenses/by-sa/3.0/",page:"https://commons.wikimedia.org/wiki/File:A_moor_at_Ikenotaira_takamine-kogen_-_panoramio.jpg"},
+ "池の平湿原の高山植物":{f:"ikenotaira",by:"u7shin",lic:"CC BY-SA 3.0",licUrl:"https://creativecommons.org/licenses/by-sa/3.0/",page:"https://commons.wikimedia.org/wiki/File:A_moor_at_Ikenotaira_takamine-kogen_-_panoramio.jpg"},
+ "湯の丸高原のレンゲツツジ":{f:"yunomaru",by:"さかおり",lic:"CC BY-SA 4.0",licUrl:"https://creativecommons.org/licenses/by-sa/4.0/",page:"https://commons.wikimedia.org/wiki/File:Mt._Nishi_Kagonoto_from_the_Summer_mountain_lift_at_Yunomaru_Plateau.jpg"},
+ "雲場池の紅葉":{f:"kumobaike",by:"くろふね",lic:"CC BY 4.0",licUrl:"https://creativecommons.org/licenses/by/4.0/",page:"https://commons.wikimedia.org/wiki/File:%E9%9B%B2%E5%A0%B4%E6%B1%A0%E3%81%AE%E9%A2%A8%E6%99%AF20211106-IMG_8292.jpg"},
+ "白糸の滝の紅葉":{f:"shiraito",by:"Hiroaki Kaneko",lic:"CC BY-SA 3.0",licUrl:"https://creativecommons.org/licenses/by-sa/3.0/",page:"https://commons.wikimedia.org/wiki/File:%E7%B4%85%E8%91%89%E3%81%AE%E7%99%BD%E7%B3%B8%E3%81%AE%E6%BB%9D_(Shiraito_falls_in_autumn)_26_Oct,_2014_-_panoramio.jpg"},
+ "懐古園の紅葉":{f:"kaikoen-koyo",by:"Raita Futo",lic:"CC BY 2.0",licUrl:"https://creativecommons.org/licenses/by/2.0/",page:"https://commons.wikimedia.org/wiki/File:Autumn_in_Komoro,_Nagano_(51981077078).jpg"},
+ "懐古園の桜":{f:"kaikoen-sakura",by:"のぶひで",lic:"CC BY-SA 4.0",licUrl:"https://creativecommons.org/licenses/by-sa/4.0/",page:"https://commons.wikimedia.org/wiki/File:Komoro_yae_beni_sidare(Weeping_cherry_tree).jpg"},
+ "上田城跡公園の桜":{f:"ueda-sakura",by:"MACHIDA Hideki",lic:"CC BY-SA 2.0",licUrl:"https://creativecommons.org/licenses/by-sa/2.0/",page:"https://commons.wikimedia.org/wiki/File:Sakura_at_Ueda_Castle,_Ueda_City;_April_2011_(05).jpg"}
+};
 const gmap=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
 const AREAS=["軽井沢町","御代田町","小諸市","佐久市","佐久穂町","立科町","東御市","上田市","青木村","長和町"].filter(a=>SPOTS.some(s=>s.a===a));
 let REPORT={checked:null,items:{}};try{REPORT=JSON.parse(document.getElementById("report").textContent)}catch(e){}
@@ -368,6 +387,7 @@ function card(s){
   else line=`あと${j.days}日ほどで見ごろ`;
   const q=encodeURIComponent(s.n.replace(/の(桜|紅葉|白樺黄葉)$/,"")+" "+(s.k==="koyo"?"紅葉":K.label)+" 見頃 "+new Date().getFullYear());
   return `<article class="card">
+    ${photoBlock(s)}
     <div class="top"><span class="kind"><i style="background:var(${K.color})"></i>${K.label}</span><span class="pill ${j.st}">${j.label||STATUS[j.st]}</span></div>
     <h3>${s.n}</h3>
     <div class="where">${s.a}・標高 約${s.alt.toLocaleString()}m</div>
@@ -377,6 +397,11 @@ function card(s){
     <div class="meter" aria-hidden="true"><span style="width:${j.st==="peak"?Math.max(6,pct):3}%;background:var(${j.st==="peak"?"--peak":"--soon"})"></span></div>
     <div class="meta"><span>例年 ${fmt(s.p[0],s.p[1])}〜${fmt(s.p[2],s.p[3])}・${line}</span><a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">最新情報を調べる ↗</a></div>
   </article>`;
+}
+function photoBlock(s){
+  const p=PHOTOS[s.n]; if(!p) return "";
+  return `<figure class="photo"><img src="photos/${p.f}.jpg" width="720" height="480" loading="lazy" alt="${s.n}の写真">
+    <figcaption>写真: <a href="${p.page}" target="_blank" rel="noopener">${p.by}</a>（<a href="${p.licUrl}" target="_blank" rel="noopener">${p.lic}</a>、Wikimedia Commons）</figcaption></figure>`;
 }
 function accessBlock(s){
   const a=ACCESS[s.n]; if(!a) return "";
