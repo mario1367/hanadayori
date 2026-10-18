@@ -24,18 +24,18 @@
 <style>
 /* Layout: 日付バー → 今の見ごろカード → 年間の見ごろ暦（帯グラフ） */
 :root{
-  --bg:#f3f4f0; --paper:#fbfbf8; --fg:#23271f; --muted:#6a7064; --line:#d9dcd2; --chip-on:#e3ebd9; --chip-on-line:#a9bb96;
+  --bg:#f3f4f0; --paper:#fbfbf8; --fg:#23271f; --muted:#6a7064; --line:#d9dcd2; --chip-on:#e3ebd9; --zebra:#ebf0e3; --guide:#d3d9c8; --chip-on-line:#a9bb96;
   --peak:#b8322a; --soon:#c98a1a; --early:#5f7f4a; --done:#9aa094;
   --c-sakura:#d7708a; --c-momo:#e0477a; --c-ajisai:#5b74c4; --c-koyo:#c8462c; --c-natsu:#8a5bb5; --c-other:#3f8f6a;
   --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
   --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --chip-on-line:#5f7a4c;
+  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --zebra:#272b23; --guide:#3d4436; --chip-on-line:#5f7a4c;
   --peak:#ef6a5e; --soon:#e5ad4a; --early:#93b77b; --done:#6c7266;
   --c-sakura:#ec9ab0; --c-momo:#f27aa2; --c-ajisai:#8ea2e8; --c-koyo:#ec7a5c; --c-natsu:#b893dc; --c-other:#6cc39b; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --chip-on-line:#5f7a4c;
+  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --zebra:#272b23; --guide:#3d4436; --chip-on-line:#5f7a4c;
   --peak:#ef6a5e; --soon:#e5ad4a; --early:#93b77b; --done:#6c7266;
   --c-sakura:#ec9ab0; --c-momo:#f27aa2; --c-ajisai:#8ea2e8; --c-koyo:#ec7a5c; --c-natsu:#b893dc; --c-other:#6cc39b; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.7}
@@ -115,6 +115,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .row .nm{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:10px}
 .row .nm small{color:var(--muted);margin-left:4px}
 .track{position:relative;height:26px;border-left:1px solid var(--line)}
+.srow{border-radius:6px}
+.srow.alt{background:var(--zebra)}
+.srow:hover{background:var(--chip-on)}
+.track::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--guide)}
 .track .seg{position:absolute;top:7px;height:12px;border-radius:6px;opacity:.9}
 .months{display:grid;grid-template-columns:repeat(12,1fr);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 .months span{border-left:1px solid var(--line);padding-left:4px}
@@ -416,6 +420,7 @@ function accessBlock(s){
 function drawCal(list,date){
   const el=$("#cal"), Y=365, pos=x=>(x/Y*100).toFixed(2)+"%";
   let h=`<div class="row"><div></div><div class="months">${Array.from({length:12},(_,i)=>`<span>${i+1}月</span>`).join("")}</div></div>`;
+  let n=0;
   const byK={};list.forEach(s=>(byK[s.k]??=[]).push(s));
   Object.keys(KINDS).forEach(k=>{
     if(!byK[k])return;
@@ -423,7 +428,7 @@ function drawCal(list,date){
     byK[k].sort((a,b)=>doy(a.p[0],a.p[1])-doy(b.p[0],b.p[1])).forEach(s=>{
       const a=doy(s.p[0],s.p[1]), b=doy(s.p[2],s.p[3]);
       const peak=s.j.st==="peak";
-      h+=`<div class="row" title="${s.n} 例年${fmt(s.p[0],s.p[1])}〜${fmt(s.p[2],s.p[3])}"><div class="nm">${peak?"● ":""}${s.n}<small>${s.a}</small></div><div class="track"><span class="seg" style="left:${pos(a)};width:${pos(b-a+1)};background:var(${KINDS[k].color});${peak?"outline:2px solid var(--fg);outline-offset:1px":""}"></span></div></div>`;
+      h+=`<div class="row srow${(n++)%2?" alt":""}" title="${s.n} 例年${fmt(s.p[0],s.p[1])}〜${fmt(s.p[2],s.p[3])}"><div class="nm">${peak?"● ":""}${s.n}<small>${s.a}</small></div><div class="track"><span class="seg" style="left:${pos(a)};width:${pos(b-a+1)};background:var(${KINDS[k].color});${peak?"outline:2px solid var(--fg);outline-offset:1px":""}"></span></div></div>`;
     });
   });
   if(!list.length) h+=`<div class="grp">条件に合う名所がありません</div>`;
