@@ -329,7 +329,7 @@ const ACCESS={
 // カードの種類（桜・紅葉など）がちゃんと写っている写真だけを載せる。合う写真がなければ載せない
 const PHOTOS={
  "白樺湖の紅葉":{f:"shirakabako",by:"Raita Futo",lic:"CC BY 2.0",licUrl:"https://creativecommons.org/licenses/by/2.0/",page:"https://commons.wikimedia.org/wiki/File:Lake_Shirakaba_(49785032782).jpg"},
- "女神湖の紅葉":{f:"megamiko",by:"Raita Futo",lic:"CC BY 2.0",licUrl:"https://creativecommons.org/licenses/by/2.0/",page:"https://commons.wikimedia.org/wiki/File:Tateshina_resort_(49784172158).jpg"},
+ "女神湖の紅葉":{f:"megamiko_own",own:"花だより（2024年11月4日撮影）"},
  "湯の丸高原のレンゲツツジ":{f:"yunomaru-tsutsuji",by:"さかおり",lic:"CC BY-SA 4.0",licUrl:"https://creativecommons.org/licenses/by-sa/4.0/",page:"https://commons.wikimedia.org/wiki/File:Yunomaru%27s_Japanese_azalea_plant_community_and_Mt_Yunomaru._A.jpg"},
  "雲場池の紅葉":{f:"kumobaike",by:"くろふね",lic:"CC BY 4.0",licUrl:"https://creativecommons.org/licenses/by/4.0/",page:"https://commons.wikimedia.org/wiki/File:%E9%9B%B2%E5%A0%B4%E6%B1%A0%E3%81%AE%E9%A2%A8%E6%99%AF20211106-IMG_8292.jpg"},
  "白糸の滝の紅葉":{f:"shiraito",by:"Hiroaki Kaneko",lic:"CC BY-SA 3.0",licUrl:"https://creativecommons.org/licenses/by-sa/3.0/",page:"https://commons.wikimedia.org/wiki/File:%E7%B4%85%E8%91%89%E3%81%AE%E7%99%BD%E7%B3%B8%E3%81%AE%E6%BB%9D_(Shiraito_falls_in_autumn)_26_Oct,_2014_-_panoramio.jpg"},
@@ -429,7 +429,7 @@ function card(s){
 function photoBlock(s){
   const p=PHOTOS[s.n]; if(!p) return "";
   return `<figure class="photo"><img src="photos/${p.f}.jpg" width="720" height="480" loading="lazy" alt="${s.n}の写真">
-    <figcaption>写真: <a href="${p.page}" target="_blank" rel="noopener">${p.by}</a>（<a href="${p.licUrl}" target="_blank" rel="noopener">${p.lic}</a>、Wikimedia Commons）</figcaption></figure>`;
+    <figcaption>${p.own?`写真: ${p.own}`:`写真: <a href="${p.page}" target="_blank" rel="noopener">${p.by}</a>（<a href="${p.licUrl}" target="_blank" rel="noopener">${p.lic}</a>、Wikimedia Commons）`}</figcaption></figure>`;
 }
 function accessBlock(s){
   const a=ACCESS[s.n]; if(!a) return "";
