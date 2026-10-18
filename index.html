@@ -80,6 +80,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .card .photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:10px 10px 0 0;background:var(--line)}
 .card .photo figcaption{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 16px 0}
 .card .photo figcaption a{color:inherit}
+.card .photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:-14px -16px 2px;border-radius:10px 10px 0 0}
+.card .photos::-webkit-scrollbar{display:none}
+.card .photos .photo{flex:0 0 100%;margin:0;scroll-snap-align:start}
+.card .photos .photo img{border-radius:0}
+.card .pno{cursor:pointer;position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;padding:2px 8px;border-radius:99px}
 .card .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .kind{font-size:12px;letter-spacing:.06em;display:flex;align-items:center;gap:6px;color:var(--muted)}
 .kind i{width:10px;height:10px;border-radius:2px;display:inline-block}
@@ -154,7 +159,8 @@ section{display:grid;gap:12px}
   .summary span[style]{font-size:14px!important}
   .grid{grid-template-columns:1fr;gap:16px}
   .card{padding:16px 18px 14px;gap:8px}
-  .card .photo{margin:-16px -18px 2px}
+  .card .photo,.card .photos{margin:-16px -18px 2px}
+  .card .photos .photo{margin:0}
   .card .photo figcaption{padding:4px 18px 0}
   .kind{font-size:14px}
   .pill{font-size:14px;padding:3px 12px}
@@ -334,7 +340,7 @@ const ACCESS={
 const PHOTOS={
  "白樺湖の紅葉":{f:"shirakabako",by:"Raita Futo",lic:"CC BY 2.0",licUrl:"https://creativecommons.org/licenses/by/2.0/",page:"https://commons.wikimedia.org/wiki/File:Lake_Shirakaba_(49785032782).jpg"},
  "女神湖の紅葉":{f:"megamiko_own",own:"Photo by Mario Kawakami"},
- "蓼科湖の紅葉":{f:"tateshinako_own2",own:"Photo by Mario Kawakami"},
+ "蓼科湖の紅葉":[{f:"tateshinako_own2",own:"Photo by Mario Kawakami"},{f:"tateshinako_own",own:"Photo by Mario Kawakami"}],
  "さかき千曲川バラ公園のバラ":{f:"sakaki_rose_own",own:"Photo by Mario Kawakami"},
  "湯の丸高原のレンゲツツジ":{f:"yunomaru-tsutsuji",by:"さかおり",lic:"CC BY-SA 4.0",licUrl:"https://creativecommons.org/licenses/by-sa/4.0/",page:"https://commons.wikimedia.org/wiki/File:Yunomaru%27s_Japanese_azalea_plant_community_and_Mt_Yunomaru._A.jpg"},
  "雲場池の紅葉":{f:"kumobaike",by:"くろふね",lic:"CC BY 4.0",licUrl:"https://creativecommons.org/licenses/by/4.0/",page:"https://commons.wikimedia.org/wiki/File:%E9%9B%B2%E5%A0%B4%E6%B1%A0%E3%81%AE%E9%A2%A8%E6%99%AF20211106-IMG_8292.jpg"},
@@ -433,9 +439,10 @@ function card(s){
   </article>`;
 }
 function photoBlock(s){
-  const p=PHOTOS[s.n]; if(!p) return "";
-  return `<figure class="photo"><img src="photos/${p.f}.jpg" width="720" height="480" loading="lazy" alt="${s.n}の写真">
+  const ps=[].concat(PHOTOS[s.n]||[]); if(!ps.length) return "";
+  const fig=(p,i)=>`<figure class="photo"><img src="photos/${p.f}.jpg" width="720" height="480" loading="lazy" alt="${s.n}の写真">${ps.length>1?`<span class="pno">${i+1}/${ps.length}${i<ps.length-1?" ▶":""}</span>`:""}
     <figcaption>${p.own?p.own:`写真: <a href="${p.page}" target="_blank" rel="noopener">${p.by}</a>（<a href="${p.licUrl}" target="_blank" rel="noopener">${p.lic}</a>、Wikimedia Commons）`}</figcaption></figure>`;
+  return ps.length>1?`<div class="photos">${ps.map(fig).join("")}</div>`:fig(ps[0],0);
 }
 function accessBlock(s){
   const a=ACCESS[s.n]; if(!a) return "";
@@ -480,6 +487,7 @@ function jumpTo(name){
   c.scrollIntoView({behavior:"smooth",block:"start"});
   c.classList.add("flash"); setTimeout(()=>c.classList.remove("flash"),1800);
 }
+$("#cards").addEventListener("click",e=>{const n=e.target.closest(".pno");if(!n)return;const w=n.closest(".photos");w.scrollBy({left:n.textContent.includes("▶")?w.clientWidth:-w.scrollLeft,behavior:"smooth"})});
 $("#cal").addEventListener("click",e=>{const r=e.target.closest(".srow");if(r)jumpTo(r.dataset.n)});
 $("#cal").addEventListener("keydown",e=>{const r=e.target.closest(".srow");if(r&&(e.key==="Enter"||e.key===" ")){e.preventDefault();jumpTo(r.dataset.n)}});
 render();
