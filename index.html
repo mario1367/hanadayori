@@ -112,6 +112,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .sister:hover{border-color:var(--muted)}
 .sister img{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion:no-preference){.sister:hover{transform:translateY(-2px)}}
+.offhead{grid-column:1/-1;margin:14px 0 0;font-size:15px;color:var(--muted);font-weight:700}
 .empty{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:20px;color:var(--muted)}
 /* 暦 */
 .cal{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
@@ -449,6 +450,10 @@ function render(){
     const next=list.filter(s=>s.j.st==="early").sort((x,y)=>x.j.days-y.j.days)[0];
     cards.innerHTML=`<div class="empty">この条件で見ごろの名所はありません。${next?`次は<strong>${next.n}</strong>（${fmt(next.p[0],next.p[1])}ごろから、あと${next.j.days}日）です。`:""}種類やエリアを広げるか、日付を変えてみてください。</div>`;
   } else cards.innerHTML=shown.map(card).join("");
+  if(areaEl.value){
+    const rest=list.filter(s=>!shown.includes(s)).sort((x,y)=>(x.j.st==="done")-(y.j.st==="done")||x.j.days-y.j.days);
+    if(rest.length) cards.innerHTML+=`<h3 class="offhead">${areaEl.value}のほかの季節の名所</h3>`+rest.map(card).join("");
+  }
   drawCal(list,date);
 }
 function card(s){
@@ -456,6 +461,7 @@ function card(s){
   let line, pct=0;
   if(j.rep){pct=j.st==="peak"?Math.round((j.prog||.5)*100):0; line=j.rep.label;}
   else if(j.st==="peak"){pct=Math.round(j.prog*100); line=j.prog<.34?"見ごろの始まり":j.prog<.67?"見ごろの真っ盛り":"見ごろ後半・あと"+j.days+"日ほど";}
+  else if(j.st==="done") line="今年の見ごろは終わりました";
   else line=`あと${j.days}日ほどで見ごろ`;
   const q=encodeURIComponent(s.n.replace(/の(桜|紅葉|白樺黄葉)$/,"")+" "+(s.k==="koyo"?"紅葉":K.label)+" 見頃 "+new Date().getFullYear());
   return `<article class="card" data-n="${s.n}">
