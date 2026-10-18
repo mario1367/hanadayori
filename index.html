@@ -234,17 +234,135 @@ section{display:grid;gap:12px}
 <!-- REPORT: 今年の現地状況。定期チェックでこのJSONだけを書き換える。st は peak|soon|early|done。label は表示する言葉。 -->
 <script type="application/json" id="report">
 {
-  "checked": "2026-10-16",
-  "items": {
-    "白樺湖の紅葉": {"st":"peak","label":"見ごろ","note":"湖畔のほとんどの地点で見ごろ。湖畔の芝生広場はまだ色づき始め。","src":"白樺高原観光協会（10/14）","url":"https://shirakabakogen.jp/feature/autumn_leaves"},
-    "女神湖の紅葉": {"st":"peak","label":"見ごろ","note":"ほとんどの地点で見ごろ。朝日の丘公園は色づき始め。","src":"白樺高原観光協会（10/14）","url":"https://shirakabakogen.jp/feature/autumn_leaves"},
-    "池の平湿原・湯の丸の紅葉": {"st":"peak","label":"見ごろ","note":"湯の丸高原は見ごろと発表。","src":"tenki.jp（10/15）","url":"https://tenki.jp/kouyou/3/23/page-2.html"},
-    "高峰高原の紅葉": {"st":"soon","label":"色づき始め","note":"ほんのり色づき始め。見ごろ予想は10/19ごろ。","src":"tenki.jp・ウェザーニュース（10/15）","url":"https://tenki.jp/kouyou/3/23/page-2.html"},
-    "八千穂高原の白樺黄葉": {"st":"soon","label":"色づき前","note":"10/15時点でまだ色づいていない。見ごろ予想は10/17ごろ。","src":"ウェザーニュース（10/15）","url":"https://weathernews.jp/koyo/area/nagano/"},
-    "白糸の滝の紅葉": {"st":"soon","label":"色づき始め","note":"ほんのり色づき始め。","src":"ウェザーニュース（10/15）","url":"https://weathernews.jp/koyo/spot/24854/"},
-    "旧碓氷峠見晴台": {"st":"soon","label":"色づき前","note":"10/15時点でまだ色づいていない。","src":"ウェザーニュース（10/15）","url":"https://weathernews.jp/koyo/area/nagano/"},
-    "雲場池の紅葉": {"st":"soon","label":"色づき始め","note":"全体の2割ほどが色づき。見ごろ予想は10/28ごろから。","src":"ウェザーニュース（10/15）","url":"https://weathernews.jp/koyo/spot/24811/"}
+ "checked": "2026-10-19",
+ "items": {
+  "白樺湖の紅葉": {
+   "st": "peak",
+   "label": "見ごろ",
+   "note": "湖畔の大半の地点が見ごろ。",
+   "src": "白樺高原観光協会（10/14）・茅野市（10/16）",
+   "url": "https://www.city.chino.lg.jp/site/chinomiryoku/iroduki2026.html"
+  },
+  "女神湖の紅葉": {
+   "st": "peak",
+   "label": "見ごろ",
+   "note": "桟橋や外周道路の大半が見ごろ。旭の丘公園は色づき始め。",
+   "src": "白樺高原観光協会（10/14）",
+   "url": "https://shirakabakogen.jp/feature/autumn_leaves"
+  },
+  "池の平湿原・湯の丸の紅葉": {
+   "st": "peak",
+   "label": "見ごろ",
+   "note": "湯の丸高原は見ごろと発表。",
+   "src": "tenki.jp（10/15）",
+   "url": "https://tenki.jp/kouyou/3/23/35137.html"
+  },
+  "高峰高原の紅葉": {
+   "st": "soon",
+   "label": "色づき始め",
+   "note": "登山道で紅葉が進み、全体は4割ほど。見ごろ予想は10/21ごろ。",
+   "src": "tenki.jp（10/16）・ウェザーニュース（10/17）",
+   "url": "https://tenki.jp/kouyou/3/23/35136.html"
+  },
+  "八千穂高原の白樺黄葉": {
+   "st": "peak",
+   "label": "見ごろ",
+   "note": "7〜8割が色づき、白樺の黄色が特にきれい。",
+   "src": "ウェザーニュース（10/16）",
+   "url": "https://weathernews.jp/koyo/spot/24830/"
+  },
+  "雲場池の紅葉": {
+   "st": "soon",
+   "label": "色づき始め",
+   "note": "部分的に色づく。見ごろは10/24ごろからの予想。",
+   "src": "tenki.jp（10/18）",
+   "url": "https://tenki.jp/kouyou/3/23/30868.html"
+  },
+  "蓼科湖の紅葉": {
+   "st": "soon",
+   "label": "3〜5分",
+   "note": "モミジなどが3〜5分の色づき。",
+   "src": "茅野市（10/16）",
+   "url": "https://www.city.chino.lg.jp/site/chinomiryoku/iroduki2026.html"
+  },
+  "御射鹿池の紅葉": {
+   "st": "soon",
+   "label": "3〜5分",
+   "note": "黄色が出てきた段階。見ごろは間近。",
+   "src": "茅野市（10/16）",
+   "url": "https://www.city.chino.lg.jp/site/chinomiryoku/iroduki2026.html"
+  },
+  "横谷渓谷の紅葉": {
+   "st": "soon",
+   "label": "3〜5分",
+   "note": "横谷観音の駐車場・展望台は3〜5分。おしどり隠しの滝は見ごろ。",
+   "src": "茅野市（10/15）",
+   "url": "https://www.city.chino.lg.jp/site/chinomiryoku/iroduki2026.html"
+  },
+  "蓼科大滝の紅葉": {
+   "st": "soon",
+   "label": "3〜5分",
+   "note": "色づきは3〜5分。",
+   "src": "茅野市（10/16）",
+   "url": "https://www.city.chino.lg.jp/site/chinomiryoku/iroduki2026.html"
+  },
+  "白駒池の紅葉": {
+   "st": "done",
+   "label": "見ごろ過ぎ",
+   "note": "落葉が進み、ドウダンツツジの赤がわずかに残る。",
+   "src": "ウェザーニュース（10/16）",
+   "url": "https://weathernews.jp/koyo/spot/24829/"
+  },
+  "松原湖の紅葉": {
+   "st": "peak",
+   "label": "見ごろ",
+   "note": "全体が色づき、湖面に八ヶ岳と紅葉が映る。",
+   "src": "tenki.jp（10/18）",
+   "url": "https://tenki.jp/kouyou/3/23/30635.html"
+  },
+  "大河原峠の紅葉": {
+   "st": "soon",
+   "label": "色づき始め",
+   "note": "部分的に紅葉が見られる。",
+   "src": "tenki.jp（10/18）",
+   "url": "https://tenki.jp/kouyou/3/23/35151.html"
+  },
+  "内山峡の紅葉": {
+   "st": "early",
+   "label": "青葉",
+   "note": "カラマツはまだ青葉。",
+   "src": "tenki.jp（10/17）",
+   "url": "https://tenki.jp/kouyou/3/23/"
+  },
+  "角間渓谷の紅葉": {
+   "st": "soon",
+   "label": "色づき始め",
+   "note": "部分的に紅葉が見られる。",
+   "src": "tenki.jp（10/18）",
+   "url": "https://tenki.jp/kouyou/3/23/35138.html"
+  },
+  "懐古園の紅葉": {
+   "st": "soon",
+   "label": "色づき始め",
+   "note": "部分的に色づく。見ごろは11月上旬〜下旬の予想。",
+   "src": "tenki.jp（10/18）",
+   "url": "https://tenki.jp/kouyou/3/23/30666.html"
+  },
+  "上田城跡公園の紅葉": {
+   "st": "early",
+   "label": "まだ",
+   "note": "色づきはまだ。",
+   "src": "ウェザーニュース（10/13）",
+   "url": "https://weathernews.jp/koyo/spot/24881/"
+  },
+  "長円寺の紅葉": {
+   "st": "soon",
+   "label": "色づき始め",
+   "note": "色づき始めの段階。",
+   "src": "茅野市（10/14）",
+   "url": "https://www.city.chino.lg.jp/site/chinomiryoku/iroduki2026.html"
   }
+ }
 }
 </script>
 <script>
