@@ -117,7 +117,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .track{position:relative;height:26px;border-left:1px solid var(--line)}
 .srow{border-radius:6px}
 .srow.alt{background:var(--zebra)}
-.srow:hover{background:var(--chip-on)}
+.srow{cursor:pointer}
+.srow:hover,.srow:focus-visible{background:var(--chip-on)}
+.srow:hover .nm{text-decoration:underline;text-underline-offset:3px}
+.card.flash{box-shadow:0 0 0 3px var(--peak);transition:box-shadow .3s}
+.card{scroll-margin-top:16px}
 .track::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--guide)}
 .track .seg{position:absolute;top:7px;height:12px;border-radius:6px;opacity:.9}
 .months{display:grid;grid-template-columns:repeat(12,1fr);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -208,7 +212,7 @@ section{display:grid;gap:12px}
   <section>
     <div class="sechead">
       <h2>年間の見ごろ暦</h2>
-      <span class="fine">赤い線が選んだ日です。帯は平年の見ごろの目安です。</span>
+      <span class="fine">赤い線が選んだ日です。帯は平年の見ごろの目安です。名所名を押すとカードへ移動します。</span>
     </div>
     <div class="cal"><div class="cal-in" id="cal"></div></div>
   </section>
@@ -416,7 +420,7 @@ function card(s){
   else if(j.st==="peak"){pct=Math.round(j.prog*100); line=j.prog<.34?"見ごろの始まり":j.prog<.67?"見ごろの真っ盛り":"見ごろ後半・あと"+j.days+"日ほど";}
   else line=`あと${j.days}日ほどで見ごろ`;
   const q=encodeURIComponent(s.n.replace(/の(桜|紅葉|白樺黄葉)$/,"")+" "+(s.k==="koyo"?"紅葉":K.label)+" 見頃 "+new Date().getFullYear());
-  return `<article class="card">
+  return `<article class="card" data-n="${s.n}">
     ${photoBlock(s)}
     <div class="top"><span class="kind"><i style="background:var(${K.color})"></i>${K.label}</span><span class="pill ${j.st}">${j.label||STATUS[j.st]}</span></div>
     <h3>${s.n}</h3>
@@ -453,7 +457,7 @@ function drawCal(list,date){
     byK[k].sort((a,b)=>doy(a.p[0],a.p[1])-doy(b.p[0],b.p[1])).forEach(s=>{
       const a=doy(s.p[0],s.p[1]), b=doy(s.p[2],s.p[3]);
       const peak=s.j.st==="peak";
-      h+=`<div class="row srow${(n++)%2?" alt":""}" title="${s.n} 例年${fmt(s.p[0],s.p[1])}〜${fmt(s.p[2],s.p[3])}"><div class="nm">${peak?"● ":""}${s.n}<small>${s.a}</small></div><div class="track"><span class="seg" style="left:${pos(a)};width:${pos(b-a+1)};background:var(${KINDS[k].color});${peak?"outline:2px solid var(--fg);outline-offset:1px":""}"></span></div></div>`;
+      h+=`<div class="row srow${(n++)%2?" alt":""}" data-n="${s.n}" role="button" tabindex="0" title="${s.n}のカードへ（例年${fmt(s.p[0],s.p[1])}〜${fmt(s.p[2],s.p[3])}）"><div class="nm">${peak?"● ":""}${s.n}<small>${s.a}</small></div><div class="track"><span class="seg" style="left:${pos(a)};width:${pos(b-a+1)};background:var(${KINDS[k].color});${peak?"outline:2px solid var(--fg);outline-offset:1px":""}"></span></div></div>`;
     });
   });
   if(!list.length) h+=`<div class="grp">条件に合う名所がありません</div>`;
@@ -463,6 +467,21 @@ function drawCal(list,date){
   line.style.left=`calc(14px + 190px + (100% - 28px - 190px) * ${t/Y})`;
   el.appendChild(line);
 }
+function jumpTo(name){
+  const find=()=>[...document.querySelectorAll("#cards .card")].find(c=>c.dataset.n===name);
+  let c=find();
+  if(!c){
+    const sp=SPOTS.find(x=>x.n===name), y=selDate().getFullYear();
+    const a=new Date(y,sp.p[0]-1,sp.p[1]), b=new Date(y,sp.p[2]-1,sp.p[3]);
+    dateEl.value=iso(new Date((a.getTime()+b.getTime())/2));
+    render(); c=find();
+  }
+  if(!c)return;
+  c.scrollIntoView({behavior:"smooth",block:"start"});
+  c.classList.add("flash"); setTimeout(()=>c.classList.remove("flash"),1800);
+}
+$("#cal").addEventListener("click",e=>{const r=e.target.closest(".srow");if(r)jumpTo(r.dataset.n)});
+$("#cal").addEventListener("keydown",e=>{const r=e.target.closest(".srow");if(r&&(e.key==="Enter"||e.key===" ")){e.preventDefault();jumpTo(r.dataset.n)}});
 render();
 </script>
 
