@@ -112,6 +112,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .sister:hover{border-color:var(--muted)}
 .sister img{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion:no-preference){.sister:hover{transform:translateY(-2px)}}
+.wxbox>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.wxbox>summary::-webkit-details-marker{display:none}
+.wxbox>summary h2{margin:0}
+.wxbox>summary h2::before{content:"▶";display:inline-block;font-size:.6em;margin-right:8px;vertical-align:middle;transition:transform .15s;color:var(--muted)}
+.wxbox[open]>summary h2::before{transform:rotate(90deg)}
+.wxbox .wxopen{font-size:12px;color:var(--muted)}
+.wxbox[open] .wxopen{display:none}
+.wxnote{margin:0 0 8px}
 .wx{display:grid;grid-template-columns:repeat(7,minmax(62px,1fr));gap:6px;overflow-x:auto;padding-bottom:2px}
 .wxd{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;font:inherit;color:inherit;cursor:pointer;display:grid;gap:2px}
 .wxd:hover{background:var(--chip-on)}
@@ -229,11 +237,11 @@ section{display:grid;gap:12px}
   </div>
 
   <section>
-    <div class="sechead">
-      <h2 id="wxTitle">1週間の天気</h2>
-      <span class="fine">市街地あたりの予報です（Open-Meteo）。高原は気温がぐっと下がります。日付を押すとその日の見ごろを表示します。</span>
-    </div>
-    <div class="wx" id="wx"><div class="wxmsg">天気予報を読み込み中…</div></div>
+    <details class="wxbox" id="wxBox">
+      <summary><h2 id="wxTitle">1週間の天気</h2><span class="wxopen">押すと開きます</span></summary>
+      <p class="fine wxnote">市街地あたりの予報です（Open-Meteo）。高原は気温がぐっと下がります。日付を押すとその日の見ごろを表示します。</p>
+      <div class="wx" id="wx"><div class="wxmsg">天気予報を読み込み中…</div></div>
+    </details>
   </section>
 
   <section>
@@ -696,9 +704,15 @@ async function wxGet(a){
   return wxCache[a];
 }
 const wxDay=(t,i)=>{const dt=new Date(t+"T00:00"),w=dt.getDay();return [i===0?"今日":`${dt.getMonth()+1}/${dt.getDate()}(${"日月火水木金土"[w]})`,w===0?" sun":w===6?" sat":""]};
-async function loadWx(){
-  const key=areaEl.value, towns=WXPOS[key]?[key]:WXALL, el=$("#wx");
+function loadWx(){
+  const key=areaEl.value, box=$("#wxBox");
   $("#wxTitle").textContent=(WXPOS[key]?key:"東信のおもな町")+"の1週間の天気";
+  $("#wx").className="wx";$("#wx").innerHTML=`<div class="wxmsg">天気予報を読み込み中…</div>`;
+  box.open=!!WXPOS[key];
+  if(box.open) wxFill();
+}
+async function wxFill(){
+  const key=areaEl.value, towns=WXPOS[key]?[key]:WXALL, el=$("#wx");
   try{
     const ds=await Promise.all(towns.map(wxGet));
     if(key!==areaEl.value) return;
@@ -718,6 +732,7 @@ async function loadWx(){
   }catch(e){el.className="wx";el.innerHTML=`<div class="wxmsg">天気予報を読み込めませんでした。少しあとで開き直してください。</div>`}
 }
 function markWx(){document.querySelectorAll("#wx [data-d]").forEach(b=>b.classList.toggle("sel",b.dataset.d===dateEl.value))}
+$("#wxBox").addEventListener("toggle",()=>{if($("#wxBox").open)wxFill()});
 $("#wx").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;dateEl.value=b.dataset.d;render()});
 render();
 loadWx();
