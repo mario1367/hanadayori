@@ -112,6 +112,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .sister:hover{border-color:var(--muted)}
 .sister img{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion:no-preference){.sister:hover{transform:translateY(-2px)}}
+.wx{display:grid;grid-template-columns:repeat(7,minmax(62px,1fr));gap:6px;overflow-x:auto;padding-bottom:2px}
+.wxd{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;font:inherit;color:inherit;cursor:pointer;display:grid;gap:2px}
+.wxd:hover{background:var(--chip-on)}
+.wxd.sel{outline:2px solid var(--peak);outline-offset:-1px}
+.wxd .dd{font-size:12px;color:var(--muted)}
+.wxd .dd.sun{color:#c0392b}.wxd .dd.sat{color:#2e6fb5}
+.wxd .ic{font-size:26px;line-height:1.2}
+.wxd .tl{font-size:11px;color:var(--muted)}
+.wxd .tt{font-size:13px}.wxd .tt b{color:#c0392b;font-weight:700}.wxd .tt span{color:#2e6fb5}
+.wxd .pp{font-size:11px;color:var(--muted)}
+.wxmsg{grid-column:1/-1;color:var(--muted);font-size:13px;padding:8px 0}
 .offhead{grid-column:1/-1;margin:14px 0 0;font-size:15px;color:var(--muted);font-weight:700}
 .empty{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:20px;color:var(--muted)}
 /* 暦 */
@@ -207,6 +218,14 @@ section{display:grid;gap:12px}
       <div class="chips" id="kinds"></div>
     </div>
   </div>
+
+  <section>
+    <div class="sechead">
+      <h2 id="wxTitle">1週間の天気</h2>
+      <span class="fine">市街地あたりの予報です（Open-Meteo）。高原は気温がぐっと下がります。日付を押すとその日の見ごろを表示します。</span>
+    </div>
+    <div class="wx" id="wx"><div class="wxmsg">天気予報を読み込み中…</div></div>
+  </section>
 
   <section>
     <div class="sechead">
@@ -556,7 +575,7 @@ dateEl.onchange=render;
 $("#todayBtn").onclick=()=>{dateEl.value=iso(today());render()};
 $("#wkBtn").onclick=()=>{const d=today();d.setDate(d.getDate()+7);dateEl.value=iso(d);render()};
 const savedArea=store("hd-area"); if(savedArea!==null&&AREAS.includes(savedArea)) areaEl.value=savedArea;
-areaEl.onchange=()=>{store("hd-area",areaEl.value);render()};
+areaEl.onchange=()=>{store("hd-area",areaEl.value);render();loadWx()};
 
 function selDate(){const v=dateEl.value; if(!v) return today(); const [y,m,d]=v.split("-").map(Number); return new Date(y,m-1,d)}
 function filtered(){return SPOTS.filter(s=>activeKinds.has(s.k)&&(!areaEl.value||s.a===areaEl.value))}
@@ -579,6 +598,7 @@ function render(){
     if(rest.length) cards.innerHTML+=`<h3 class="offhead">${areaEl.value}のほかの季節の名所</h3>`+rest.map(card).join("");
   }
   drawCal(list,date);
+  markWx();
 }
 function card(s){
   const K=KINDS[s.k], j=s.j;
@@ -652,7 +672,33 @@ function jumpTo(name){
 $("#cards").addEventListener("click",e=>{const n=e.target.closest(".pno");if(!n)return;const w=n.closest(".photos");w.scrollBy({left:n.textContent.includes("▶")?w.clientWidth:-w.scrollLeft,behavior:"smooth"})});
 $("#cal").addEventListener("click",e=>{const r=e.target.closest(".srow");if(r)jumpTo(r.dataset.n)});
 $("#cal").addEventListener("keydown",e=>{const r=e.target.closest(".srow");if(r&&(e.key==="Enter"||e.key===" ")){e.preventDefault();jumpTo(r.dataset.n)}});
+// 1週間の天気（Open-Meteo、キー不要）
+const WXPOS={"軽井沢町":[36.348,138.597],"御代田町":[36.325,138.509],"小諸市":[36.327,138.426],"佐久市":[36.249,138.477],"佐久市望月":[36.267,138.363],"佐久穂町":[36.159,138.484],"小海町":[36.095,138.483],"立科町":[36.272,138.316],"東御市":[36.359,138.330],"上田市":[36.402,138.249],"上田市丸子":[36.330,138.265],"坂城町":[36.462,138.180],"青木村":[36.370,138.130],"長和町":[36.257,138.240],"茅野市":[36.050,138.240]};
+const WMO=c=>c===0?["☀️","晴れ"]:c<=2?["🌤️","晴れ時々曇"]:c===3?["☁️","くもり"]:c<=48?["🌫️","霧"]:c<=57?["🌦️","霧雨"]:c<=67?["🌧️","雨"]:c<=77?["❄️","雪"]:c<=82?["🌦️","にわか雨"]:c<=86?["🌨️","にわか雪"]:["⛈️","雷雨"];
+const wxCache={};
+async function loadWx(){
+  const area=WXPOS[areaEl.value]?areaEl.value:"佐久市", el=$("#wx");
+  $("#wxTitle").textContent=(areaEl.value?area:"東信（佐久市）")+"の1週間の天気";
+  try{
+    if(!wxCache[area]){
+      const [la,lo]=WXPOS[area];
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=7`);
+      if(!r.ok) throw 0;
+      wxCache[area]=(await r.json()).daily;
+    }
+    if(area!==(WXPOS[areaEl.value]?areaEl.value:"佐久市")) return;
+    const d=wxCache[area], W="日月火水木金土";
+    el.innerHTML=d.time.map((t,i)=>{
+      const dt=new Date(t+"T00:00"), w=dt.getDay(), [ic,lb]=WMO(d.weather_code[i]), pp=d.precipitation_probability_max[i];
+      return `<button type="button" class="wxd" data-d="${t}" title="${lb}"><span class="dd${w===0?" sun":w===6?" sat":""}">${i===0?"今日":`${dt.getMonth()+1}/${dt.getDate()}(${W[w]})`}</span><span class="ic">${ic}</span><span class="tl">${lb}</span><span class="tt"><b>${Math.round(d.temperature_2m_max[i])}°</b> / <span>${Math.round(d.temperature_2m_min[i])}°</span></span><span class="pp">${pp==null?"":`☂ ${pp}%`}</span></button>`;
+    }).join("");
+    markWx();
+  }catch(e){el.innerHTML=`<div class="wxmsg">天気予報を読み込めませんでした。少しあとで開き直してください。</div>`}
+}
+function markWx(){document.querySelectorAll("#wx .wxd").forEach(b=>b.classList.toggle("sel",b.dataset.d===dateEl.value))}
+$("#wx").addEventListener("click",e=>{const b=e.target.closest(".wxd");if(!b)return;dateEl.value=b.dataset.d;render()});
 render();
+loadWx();
 </script>
 
 </body>
