@@ -143,6 +143,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .offhead{grid-column:1/-1;margin:14px 0 0;font-size:15px;color:var(--muted);font-weight:700}
 .empty{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:20px;color:var(--muted)}
 /* 暦 */
+.calnote{margin:0 0 8px;font-size:13px;color:var(--muted)}
+.calnote button{margin-left:8px;font:inherit;font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--fg);cursor:pointer}
 .cal{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
 .cal-in{min-width:760px;padding:12px 14px 14px;position:relative}
 .row{display:grid;grid-template-columns:190px 1fr;align-items:center;min-height:26px}
@@ -257,6 +259,7 @@ section{display:grid;gap:12px}
       <h2>年間の見ごろ暦</h2>
       <span class="fine">赤い線が選んだ日です。帯は平年の見ごろの目安です。名所名を押すとカードへ移動します。</span>
     </div>
+    <div class="calnote" id="calnote" hidden></div>
     <div class="cal"><div class="cal-in" id="cal"></div></div>
   </section>
 
@@ -616,6 +619,7 @@ function render(){
     if(rest.length) cards.innerHTML+=`<h3 class="offhead">${areaEl.value}のほかの季節の名所</h3>`+rest.map(card).join("");
   }
   drawCal(list,date);
+  calNote();
   markWx();
 }
 function card(s){
@@ -652,6 +656,14 @@ function accessBlock(s){
     <dt>食事・カフェ</dt><dd>${a.eat.length?a.eat.join("、"):"近くの店は地図から探せます。"}</dd></dl>
     <div class="maplinks"><a href="${gmap(a.q)}" target="_blank" rel="noopener">地図</a><a href="${gmap(near+" 駐車場")}" target="_blank" rel="noopener">近くの駐車場</a><a href="${gmap(near+" カフェ")}" target="_blank" rel="noopener">近くのカフェ</a><a href="${gmap(near+" 食事")}" target="_blank" rel="noopener">近くの食事処</a></div>
   </details>`;
+}
+function calNote(){
+  const el=$("#calnote"), allK=activeKinds.size===Object.keys(KINDS).length;
+  if(!areaEl.value&&allK){el.hidden=true;return}
+  const what=[areaEl.value,allK?"":[...activeKinds].map(k=>KINDS[k].label).join("・")].filter(Boolean).join("の");
+  el.innerHTML=`${what}の名所だけ表示しています。<button type="button" id="calAll">東信すべてを表示</button>`;
+  el.hidden=false;
+  $("#calAll").onclick=()=>{areaEl.value="";store("hd-area","");activeKinds=new Set(Object.keys(KINDS));syncChips();render();loadWx()};
 }
 function drawCal(list,date){
   const el=$("#cal"), Y=365, pos=x=>(x/Y*100).toFixed(2)+"%";
