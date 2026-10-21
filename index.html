@@ -24,18 +24,18 @@
 <style>
 /* Layout: 日付バー → 今の見ごろカード → 年間の見ごろ暦（帯グラフ） */
 :root{
-  --bg:#f3f4f0; --paper:#fbfbf8; --fg:#23271f; --muted:#6a7064; --line:#d9dcd2; --chip-on:#e3ebd9; --zebra:#ebf0e3; --guide:#d3d9c8; --chip-on-line:#a9bb96;
+  --bg:#f3f4f0; --paper:#fbfbf8; --fg:#23271f; --muted:#6a7064; --line:#d9dcd2; --chip-on:#e3ebd9; --zebra:#ebf0e3; --guide:#d3d9c8; --hot:#b42318; --cold:#1d5aa6; --chip-on-line:#a9bb96;
   --peak:#b8322a; --soon:#c98a1a; --early:#5f7f4a; --done:#9aa094;
   --c-sakura:#d7708a; --c-momo:#e0477a; --c-ajisai:#5b74c4; --c-koyo:#c8462c; --c-natsu:#8a5bb5; --c-other:#3f8f6a;
   --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
   --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --zebra:#272b23; --guide:#3d4436; --chip-on-line:#5f7a4c;
+  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --zebra:#272b23; --guide:#3d4436; --hot:#ff8a7a; --cold:#8cb8ff; --chip-on-line:#5f7a4c;
   --peak:#ef6a5e; --soon:#e5ad4a; --early:#93b77b; --done:#6c7266;
   --c-sakura:#ec9ab0; --c-momo:#f27aa2; --c-ajisai:#8ea2e8; --c-koyo:#ec7a5c; --c-natsu:#b893dc; --c-other:#6cc39b; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --zebra:#272b23; --guide:#3d4436; --chip-on-line:#5f7a4c;
+  --bg:#161814; --paper:#1f221c; --fg:#e8eae2; --muted:#9ba293; --line:#343830; --chip-on:#33402b; --zebra:#272b23; --guide:#3d4436; --hot:#ff8a7a; --cold:#8cb8ff; --chip-on-line:#5f7a4c;
   --peak:#ef6a5e; --soon:#e5ad4a; --early:#93b77b; --done:#6c7266;
   --c-sakura:#ec9ab0; --c-momo:#f27aa2; --c-ajisai:#8ea2e8; --c-koyo:#ec7a5c; --c-natsu:#b893dc; --c-other:#6cc39b; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.7}
@@ -117,29 +117,29 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .wxbox>summary h2{margin:0}
 .wxbox>summary h2::before{content:"▶";display:inline-block;font-size:.6em;margin-right:8px;vertical-align:middle;transition:transform .15s;color:var(--muted)}
 .wxbox[open]>summary h2::before{transform:rotate(90deg)}
-.wxbox .wxopen{font-size:12px;color:var(--muted)}
+.wxbox .wxopen{font-size:13px;color:var(--fg);font-weight:500}
 .wxbox[open] .wxopen{display:none}
-.wxnote{margin:0 0 8px}
+.wxnote{margin:0 0 8px;color:var(--fg)}
 .wx{display:grid;grid-template-columns:repeat(7,minmax(62px,1fr));gap:6px;overflow-x:auto;padding-bottom:2px}
 .wxd{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;font:inherit;color:inherit;cursor:pointer;display:grid;gap:2px}
 .wxd:hover{background:var(--chip-on)}
 .wxd.sel{outline:2px solid var(--peak);outline-offset:-1px}
-.wxd .dd{font-size:12px;color:var(--muted)}
-.wxd .dd.sun{color:#c0392b}.wxd .dd.sat{color:#2e6fb5}
+.wxd .dd{font-size:13px;color:var(--fg);font-weight:700}
+.wxd .dd.sun{color:var(--hot)}.wxd .dd.sat{color:var(--cold)}
 .wxd .ic{font-size:26px;line-height:1.2}
-.wxd .tl{font-size:11px;color:var(--muted)}
-.wxd .tt{font-size:13px}.wxd .tt b{color:#c0392b;font-weight:700}.wxd .tt span{color:#2e6fb5}
-.wxd .pp{font-size:11px;color:var(--muted)}
+.wxd .tl{font-size:12px;color:var(--fg);font-weight:500}
+.wxd .tt{font-size:15px;font-weight:700;color:var(--fg)}.wxd .tt b{color:var(--hot);font-weight:700}.wxd .tt span{color:var(--cold)}
+.wxd .pp{font-size:12px;color:var(--fg);font-weight:500}
 .wxt{overflow-x:auto}
-.wxt table{border-collapse:separate;border-spacing:3px;width:100%;min-width:560px;font-size:12px}
-.wxt th[scope=row]{text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;padding-right:4px}
+.wxt table{border-collapse:separate;border-spacing:3px;width:100%;min-width:580px;font-size:13px}
+.wxt th[scope=row]{text-align:left;font-weight:700;color:var(--fg);white-space:nowrap;padding-right:4px}
 .wxt td{background:var(--paper);border:1px solid var(--line);border-radius:8px;text-align:center;padding:4px 2px;cursor:pointer}
 .wxt td:hover{background:var(--chip-on)}
 .wxt td .ic{display:block;font-size:20px;line-height:1.2}
-.wxt td .tt b{color:#c0392b;font-weight:700}.wxt td .tt span{color:#2e6fb5}
+.wxt td .tt{font-weight:700;color:var(--fg)}.wxt td .tt b{color:var(--hot);font-weight:700}.wxt td .tt span{color:var(--cold)}
 .wxt .wxh{width:100%;padding:4px 2px;border:0;background:none}
 .wxt td.sel,.wxt .wxh.sel{outline:2px solid var(--peak);outline-offset:-1px}
-.wxmsg{grid-column:1/-1;color:var(--muted);font-size:13px;padding:8px 0}
+.wxmsg{grid-column:1/-1;color:var(--fg);font-size:14px;padding:8px 0}
 .offhead{grid-column:1/-1;margin:14px 0 0;font-size:15px;color:var(--muted);font-weight:700}
 .empty{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:20px;color:var(--muted)}
 /* 暦 */
