@@ -76,11 +76,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .summary b{font-family:var(--display);font-size:20px;margin-right:4px;font-variant-numeric:tabular-nums}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px 12px;display:grid;gap:6px;align-content:start;min-width:0}
-.card .photo{margin:-14px -16px 2px;position:relative}
-.card .photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:10px 10px 0 0;background:var(--line)}
+.card .photo{margin:2px -16px;position:relative}
+.card .photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:0;background:var(--line)}
 .card .photo figcaption{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 16px 0}
 .card .photo figcaption a{color:inherit}
-.card .photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:-14px -16px 2px;border-radius:10px 10px 0 0}
+.card .photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:2px -16px}
 .card .photos::-webkit-scrollbar{display:none}
 .card .photos .photo{flex:0 0 100%;margin:0;scroll-snap-align:start}
 .card .photos .photo img{border-radius:0}
@@ -192,7 +192,7 @@ section{display:grid;gap:12px}
   .summary span[style]{font-size:14px!important}
   .grid{grid-template-columns:1fr;gap:16px}
   .card{padding:16px 18px 14px;gap:8px}
-  .card .photo,.card .photos{margin:-16px -18px 2px}
+  .card .photo,.card .photos{margin:2px -18px}
   .card .photos .photo{margin:0}
   .card .photo figcaption{padding:4px 18px 0}
   .kind{font-size:14px}
@@ -633,9 +633,9 @@ function card(s){
   else line=`あと${j.days}日ほどで見ごろ`;
   const q=encodeURIComponent(s.n.replace(/の(桜|紅葉|白樺黄葉)$/,"")+" "+(s.k==="koyo"?"紅葉":K.label)+" 見頃 "+new Date().getFullYear());
   return `<article class="card" data-n="${s.n}">
-    ${photoBlock(s)}
     <div class="top"><span class="kind"><i style="background:var(${K.color})"></i>${K.label}</span><span class="pill ${j.st}">${j.label||STATUS[j.st]}</span></div>
     <h3>${s.n}</h3>
+    ${photoBlock(s)}
     <div class="where">${s.a}・標高 約${s.alt.toLocaleString()}m</div>
     <p class="note">${s.t}</p>
     ${j.rep?`<p class="live"><span>現地情報</span>${j.rep.note} <a href="${j.rep.url}" target="_blank" rel="noopener">${j.rep.src} ↗</a></p>`:""}
