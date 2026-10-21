@@ -120,24 +120,26 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .wxbox .wxopen{font-size:13px;color:var(--fg);font-weight:500}
 .wxbox[open] .wxopen{display:none}
 .wxnote{margin:0 0 8px;color:var(--fg)}
-.wx{display:grid;grid-template-columns:repeat(7,minmax(62px,1fr));gap:6px;overflow-x:auto;padding-bottom:2px}
+.wx{display:grid;grid-template-columns:repeat(7,minmax(72px,1fr));gap:6px;overflow-x:auto;padding-bottom:2px}
 .wxd{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;font:inherit;color:inherit;cursor:pointer;display:grid;gap:2px}
 .wxd:hover{background:var(--chip-on)}
 .wxd.sel{outline:2px solid var(--peak);outline-offset:-1px}
-.wxd .dd{font-size:13px;color:var(--fg);font-weight:700}
+.wxd>*{justify-self:center;max-width:none}
+.wxd .dd{font-size:13px;color:var(--fg);font-weight:700;white-space:nowrap;letter-spacing:-.02em}
 .wxd .dd.sun{color:var(--hot)}.wxd .dd.sat{color:var(--cold)}
 .wxd .ic{font-size:26px;line-height:1.2}
 .wxd .tl{font-size:12px;color:var(--fg);font-weight:500}
 .wxd .tt{font-size:15px;font-weight:700;color:var(--fg)}.wxd .tt b{color:var(--hot);font-weight:700}.wxd .tt span{color:var(--cold)}
 .wxd .pp{font-size:12px;color:var(--fg);font-weight:500}
 .wxt{overflow-x:auto}
-.wxt table{border-collapse:separate;border-spacing:3px;width:100%;min-width:580px;font-size:13px}
+.wxt table{border-collapse:separate;border-spacing:3px;width:100%;min-width:600px;font-size:13px}
 .wxt th[scope=row]{text-align:left;font-weight:700;color:var(--fg);white-space:nowrap;padding-right:4px}
 .wxt td{background:var(--paper);border:1px solid var(--line);border-radius:8px;text-align:center;padding:4px 2px;cursor:pointer}
 .wxt td:hover{background:var(--chip-on)}
 .wxt td .ic{display:block;font-size:20px;line-height:1.2}
 .wxt td .tt{font-weight:700;color:var(--fg)}.wxt td .tt b{color:var(--hot);font-weight:700}.wxt td .tt span{color:var(--cold)}
-.wxt .wxh{width:100%;padding:4px 2px;border:0;background:none}
+.wxt thead th{padding:0;text-align:center}
+.wxt .wxh{width:100%;padding:4px 0;border:0;background:none;justify-items:center}
 .wxt td.sel,.wxt .wxh.sel{outline:2px solid var(--peak);outline-offset:-1px}
 .wxmsg{grid-column:1/-1;color:var(--fg);font-size:14px;padding:8px 0}
 .offhead{grid-column:1/-1;margin:14px 0 0;font-size:15px;color:var(--muted);font-weight:700}
