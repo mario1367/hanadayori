@@ -114,7 +114,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .maplinks{display:flex;flex-wrap:wrap;gap:6px}
 .maplinks a{color:var(--fg);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px}
 .maplinks a:hover{border-color:var(--muted)}
-.sister{display:block;max-width:560px;width:100%;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid var(--line);transition:transform .15s}
+.sister{display:block;box-sizing:border-box;max-width:560px;width:100%;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid var(--line);transition:transform .15s}
 .sister:hover{border-color:var(--muted)}
 .sister img{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion:no-preference){.sister:hover{transform:translateY(-2px)}}
@@ -137,7 +137,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .wxd .tl{font-size:12px;color:var(--fg);font-weight:500}
 .wxd .tt{font-size:15px;font-weight:700;color:var(--fg)}.wxd .tt b{color:var(--hot);font-weight:700}.wxd .tt span{color:var(--cold)}
 .wxd .pp{font-size:12px;color:var(--fg);font-weight:500}
-.wxt{overflow-x:auto}
+.wrap>*,section,.wxbox{min-width:0}
+.wxt{overflow-x:auto;max-width:100%}
 .wxt table{border-collapse:separate;border-spacing:3px;width:100%;min-width:600px;font-size:13px}
 .wxt th[scope=row]{text-align:left;font-weight:700;color:var(--fg);white-space:nowrap;padding-right:4px}
 .wxt td{background:var(--paper);border:1px solid var(--line);border-radius:8px;text-align:center;padding:4px 2px;cursor:pointer}
