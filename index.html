@@ -52,6 +52,12 @@ header{display:grid;gap:6px}
 :root[data-theme="dark"] .hero .scene{filter:brightness(.92)}
 @media (max-width:520px){.hero{padding:26px 20px 130px}}
 .herotext{display:grid;gap:6px;min-width:0}
+.storylink{position:absolute;right:20px;bottom:18px;display:grid;place-items:center;width:60px;height:60px;border-radius:4px;background:rgba(244,232,207,.92);color:#8a2f1d;border:2px solid #8a2f1d;box-shadow:inset 0 0 0 2px #f4e8cf,inset 0 0 0 3px rgba(138,47,29,.7),0 2px 0 #6b2416,0 4px 8px rgba(60,30,10,.2);font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;font-weight:700;text-decoration:none;text-align:center;transition:transform .1s,box-shadow .1s}
+.storylink .sl-in{font-size:10px;line-height:1.3;letter-spacing:.04em}
+.storylink small{display:block;font-size:7px;font-weight:600;letter-spacing:.04em;margin-top:1px}
+.storylink:hover{background:#f8eedb}
+.storylink:active{transform:translateY(2px);box-shadow:inset 0 0 0 2px #f4e8cf,inset 0 0 0 3px rgba(138,47,29,.7),0 0 0 #6b2416,0 2px 4px rgba(60,30,10,.2)}
+@media (max-width:520px){.storylink{right:14px;bottom:12px;width:48px;height:48px}.storylink .sl-in{font-size:8.5px;letter-spacing:.02em}.storylink small{font-size:6px;margin-top:0;letter-spacing:0}}
 .logo{width:120px;height:120px;border-radius:50%;display:block}
 @media (max-width:520px){.hero{grid-template-columns:1fr}.logo{width:96px;height:96px}}
 .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--muted)}
@@ -223,6 +229,7 @@ section{display:grid;gap:12px}
     <h1>花だより</h1>
     <p class="tagline"><span>花や紅葉などの</span><span>見頃をお知らせします。</span></p>
     </div>
+    <a class="storylink" href="https://mario1367.github.io/story-maker/" aria-label="人生の物語メーカー"><span class="sl-in" aria-hidden="true">人生の<br>物語<small>メーカー</small></span></a>
   </header>
 
   <div class="bar" role="region" aria-label="絞り込み">
