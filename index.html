@@ -634,14 +634,15 @@ function render(){
 }
 function card(s){
   const K=KINDS[s.k], j=s.j;
-  let line, pct=0;
+  let line, pct=0, off="";
   if(j.rep){pct=j.st==="peak"?Math.round((j.prog||.5)*100):0; line=j.rep.label;}
   else if(j.st==="peak"){pct=Math.round(j.prog*100); line=j.prog<.34?"見ごろの始まり":j.prog<.67?"見ごろの真っ盛り":"見ごろ後半・あと"+j.days+"日ほど";}
   else if(j.st==="done") line="今年の見ごろは終わりました";
+  else if(j.st==="early"&&j.days>60){const nx=new Date(selDate());nx.setDate(nx.getDate()+j.days);off=`次は${s.p[0]}月`;line=`次の見ごろは${nx.getFullYear()>selDate().getFullYear()?"来年":""}${s.p[0]}月${s.p[1]<=10?"上旬":s.p[1]<=20?"中旬":"下旬"}ごろ`;}
   else line=`あと${j.days}日ほどで見ごろ`;
   const q=encodeURIComponent(s.n.replace(/の(桜|紅葉|白樺黄葉)$/,"")+" "+(s.k==="koyo"?"紅葉":K.label)+" 見頃 "+new Date().getFullYear());
   return `<article class="card" data-n="${s.n}">
-    <div class="top"><span class="kind"><i style="background:var(${K.color})"></i>${K.label}</span><span class="pill ${j.st}">${j.label||STATUS[j.st]}</span></div>
+    <div class="top"><span class="kind"><i style="background:var(${K.color})"></i>${K.label}</span><span class="pill ${j.st}">${j.label||off||STATUS[j.st]}</span></div>
     <h3>${s.n}</h3>
     ${photoBlock(s)}
     <div class="where">${s.a}・標高 約${s.alt.toLocaleString()}m</div>
