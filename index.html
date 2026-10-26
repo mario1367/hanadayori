@@ -149,6 +149,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .wxt .wxh{width:100%;padding:4px 0;border:0;background:none;justify-items:center}
 .wxt td.sel,.wxt .wxh.sel{outline:2px solid var(--peak);outline-offset:-1px}
 .wxmsg{grid-column:1/-1;color:var(--fg);font-size:14px;padding:8px 0}
+.wxretry{font:inherit;font-size:14px;margin-left:4px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--fg);cursor:pointer}
 .offhead{grid-column:1/-1;margin:14px 0 0;font-size:15px;color:var(--muted);font-weight:700}
 .empty{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:20px;color:var(--muted)}
 /* 暦 */
@@ -711,14 +712,23 @@ const WXPOS={"軽井沢町":[36.348,138.597],"御代田町":[36.325,138.509],"�
 const WMO=c=>c===0?["☀️","晴れ"]:c<=2?["🌤️","晴れ時々曇"]:c===3?["☁️","くもり"]:c<=48?["🌫️","霧"]:c<=57?["🌦️","霧雨"]:c<=67?["🌧️","雨"]:c<=77?["❄️","雪"]:c<=82?["🌦️","にわか雨"]:c<=86?["🌨️","にわか雪"]:["⛈️","雷雨"];
 const wxCache={};
 const WXALL=["軽井沢町","小諸市","佐久市","東御市","上田市","立科町","茅野市"];
-async function wxGet(a){
-  if(!wxCache[a]){
-    const [la,lo]=WXPOS[a];
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=7`);
-    if(!r.ok) throw 0;
-    wxCache[a]=(await r.json()).daily;
+async function wxFetch(towns){
+  const q=towns.map(a=>WXPOS[a]);
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${q.map(x=>x[0]).join(",")}&longitude=${q.map(x=>x[1]).join(",")}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=7`;
+  for(let i=0;;i++){
+    try{
+      const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),12000);
+      const r=await fetch(url,{signal:ac.signal,cache:"no-store"}); clearTimeout(tm);
+      if(!r.ok) throw r.status;
+      const j=await r.json();
+      return [].concat(j).map(x=>x.daily);
+    }catch(e){if(i>=2) throw e; await new Promise(f=>setTimeout(f,1500*(i+1)));}
   }
-  return wxCache[a];
+}
+async function wxGetAll(towns){
+  const need=towns.filter(a=>!wxCache[a]);
+  if(need.length){const ds=await wxFetch(need);need.forEach((a,k)=>wxCache[a]=ds[k]);}
+  return towns.map(a=>wxCache[a]);
 }
 const wxDay=(t,i)=>{const dt=new Date(t+"T00:00"),w=dt.getDay();return [i===0?"今日":`${dt.getMonth()+1}/${dt.getDate()}(${"日月火水木金土"[w]})`,w===0?" sun":w===6?" sat":""]};
 function loadWx(){
@@ -731,7 +741,7 @@ function loadWx(){
 async function wxFill(){
   const key=areaEl.value, towns=WXPOS[key]?[key]:WXALL, el=$("#wx");
   try{
-    const ds=await Promise.all(towns.map(wxGet));
+    const ds=await wxGetAll(towns);
     if(key!==areaEl.value) return;
     if(towns.length===1){
       const d=ds[0];
@@ -746,11 +756,11 @@ async function wxFill(){
       el.innerHTML=`<table><thead><tr><th></th>${days.map((t,i)=>{const [dl,wc]=wxDay(t,i);return `<th><button type="button" class="wxd wxh" data-d="${t}"><span class="dd${wc}">${dl}</span></button></th>`}).join("")}</tr></thead><tbody>${towns.map((a,k)=>`<tr><th scope="row">${a.replace(/(町|市)$/,"")}</th>${ds[k].time.map((t,i)=>{const [ic,lb]=WMO(ds[k].weather_code[i]);return `<td data-d="${t}" title="${a} ${lb} 降水${ds[k].precipitation_probability_max[i]??"-"}%"><span class="ic">${ic}</span><span class="tt"><b>${Math.round(ds[k].temperature_2m_max[i])}°</b>/<span>${Math.round(ds[k].temperature_2m_min[i])}°</span></span></td>`}).join("")}</tr>`).join("")}</tbody></table>`;
     }
     markWx();
-  }catch(e){el.className="wx";el.innerHTML=`<div class="wxmsg">天気予報を読み込めませんでした。少しあとで開き直してください。</div>`}
+  }catch(e){el.className="wx";el.innerHTML=`<div class="wxmsg">天気予報を読み込めませんでした。電波のよいところで <button type="button" class="wxretry">もう一度読み込む</button></div>`}
 }
 function markWx(){document.querySelectorAll("#wx [data-d]").forEach(b=>b.classList.toggle("sel",b.dataset.d===dateEl.value))}
 $("#wxBox").addEventListener("toggle",()=>{if($("#wxBox").open)wxFill()});
-$("#wx").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;dateEl.value=b.dataset.d;render()});
+$("#wx").addEventListener("click",e=>{if(e.target.closest(".wxretry")){e.target.closest(".wxmsg").textContent="天気予報を読み込み中…";wxFill();return}const b=e.target.closest("[data-d]");if(!b)return;dateEl.value=b.dataset.d;render()});
 render();
 loadWx();
 </script>
